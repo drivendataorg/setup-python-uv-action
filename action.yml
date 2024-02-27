@@ -43,7 +43,9 @@ runs:
       if: ${{ (inputs.cache == 'packages' || inputs.cache == 'venv') && inputs.cache-dependency-path }}
       shell: bash
       run: |
-        checksum=$(md5sum $(echo "${{ inputs.cache-dependency-path }}") | md5sum | awk '{ print $1 }')
+        dependencies="${{ inputs.cache-dependency-path }}" | tr '\n' ' '
+        echo "dependencies: $dependencies"
+        checksum=$(md5sum $dependencies | md5sum | awk '{ print $1 }')
         echo "checksum: $checksum"
         echo "checksum-suffix=-$checksum" >> $GITHUB_OUTPUT
 
