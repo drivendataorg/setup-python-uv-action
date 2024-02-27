@@ -37,6 +37,13 @@ runs:
         echo "uv-path=$(which uv)" >> $GITHUB_OUTPUT
         echo "uv-cache-dir=$(uv cache dir)" >> $GITHUB_OUTPUT
         echo "venv-dir=$HOME/.venv" >> $GITHUB_OUTPUT
+    
+    - name: Windows venv dir
+      id: venv-dir-windows
+      if: ${{ runner.os == 'Windows' }}
+      shell: bash
+      run: |
+        echo "venv-dir=$(cygpath -w ${{ steps.setup-uv.outputs.venv-dir }})" >> $GITHUB_OUTPUT
 
     - name: Generate checksum of cache dependencies
       id: cache-dependency-checksum
@@ -61,7 +68,7 @@ runs:
       if: ${{ inputs.cache == 'venv' }}
       with:
         path: |
-          ${{ steps.setup-uv.outputs.venv-dir }}
+          ${{ runner.os == "Windows" && steps.venv-dir-windows.outputs.venv-dir || steps.setup-uv.outputs.venv-dir }}
         key: setup-python-uv-action-venv-${{ runner.os }}-python-${{ inputs.python-version }}${{ steps.cache-dependency-checksum.outputs.checksum-suffix }}
         save-always: true
 
