@@ -40,10 +40,12 @@ runs:
 
     - name: Generate checksum of cache dependencies
       id: cache-dependency-checksum
-      if: ${{ (inputs.cache-packages == 'true' || inputs.cache-venv == 'true') && inputs.cache-dependency-path }}
+      if: ${{ (inputs.cache == 'packages' || inputs.cache == 'venv') && inputs.cache-dependency-path }}
       shell: bash
       run: |
-        echo "checksum=$(md5sum ${{ inputs.cache-dependency-path }}) | md5sum | awk '{ print $1 }')" >> $GITHUB_OUTPUT
+        checksum=$(md5sum ${{ inputs.cache-dependency-path }}) | md5sum | awk '{ print $1 }')
+        echo "checksum: $checksum"
+        echo "checksum=$checksum" >> $GITHUB_OUTPUT
 
     - name: Set up package cache
       id: setup-package-cache
