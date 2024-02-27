@@ -1,6 +1,9 @@
-cloudpathlib
-erdantic
+cloudpathlib[all]
+coverage
+mkdocs
+mkdocs-material
 mypy
 nbautoexport
 ruff
 pytest
+pytest-cov
