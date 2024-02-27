@@ -3,6 +3,11 @@ description: 'Sets up Python, installs uv, sets up uv cache, and creates and act
 inputs:
   python-version:
     description: "Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset. Passed to setup-python."
+  cache:
+    description: "Whether to cache uv's cache directory. Default is true."
+    default: "true"
+  cache-dependency-path:
+    description: "Specify dependency files hash for cache key. Supports wildcards or a list of file names."
 runs:
   using: "composite"
   steps:
@@ -18,11 +23,20 @@ runs:
         pipx install uv
         echo "uv_cache_dir=$(uv cache dir)" >> $GITHUB_OUTPUT
 
+    - name: Generate checksum of cache dependencies
+      id: cache-dependency-checksum
+      if: ${{ inputs.cache == 'true' && inputs.cache-dependency-path }}
+      shell: bash
+      run: |
+        echo "checksum=$(md5sum $(${{ inputs.cache-dependency-path }}) | md5sum | awk '{ print $1 }')" >> $GITHUB_OUTPUT
+
     - name: Set up uv cache
       uses: actions/cache@v4
+      if: ${{ inputs.cache == 'true' }}
       with:
         path: ${{ steps.install-uv.outputs.uv_cache_dir }}
-        key: ${{ runner.os }}-python-uv
+        key: setup-python-uv-action-${{ runner.os }}-${{ steps.cache-dependency-checksum.outputs.checksum }}
+        save-always: true
 
     - name: Create virtual environment
       shell: bash
