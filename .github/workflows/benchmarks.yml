@@ -1,4 +1,4 @@
-name: test
+name: benchmarks
 
 on: 
   pull_request:
@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.8, "3.12"]
+        python-version: ["3.12"]
     defaults:
       run:
         shell: bash
@@ -50,7 +50,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.8, "3.12"]
+        python-version: ["3.12"]
     defaults:
       run:
         shell: bash
@@ -88,7 +88,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.8, "3.12"]
+        python-version: ["3.12"]
     defaults:
       run:
         shell: bash
@@ -115,3 +115,66 @@ jobs:
           nbautoexport --version
           mkdocs --version
           pytest --version
+
+  tests-pip-cache:
+    name: Test pip, cache (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.12"]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+          cache-dependency-path: |
+            test_assets/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          pip install -r test_assets/requirements.txt
+
+      - name: Test some stuff
+        run: |
+          python -c "import cloudpathlib; print('cloudpathlib:', cloudpathlib.__version__)"
+          nbautoexport --version
+          mkdocs --version
+          pytest --version
+        
+
+  tests-pip-no-cache:
+    name: Test pip, no cache (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.12"]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pip install -r test_assets/requirements.txt
+
+      - name: Test some stuff
+        run: |
+          python -c "import cloudpathlib; print('cloudpathlib:', cloudpathlib.__version__)"
+          nbautoexport --version
+          mkdocs --version
+          pytest --version
+        

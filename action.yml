@@ -3,12 +3,8 @@ description: 'Sets up Python, installs uv, sets up uv cache, and creates and act
 inputs:
   python-version:
     description: "Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset. Passed to setup-python."
-  cache-packages:
-    description: "If set to 'true', will cache uv's cache directory. Default is 'false'."
-    default: "false"
-  cache-venv:
-    description: "If set to 'true', will cache the virtual environment. Default is 'false'."
-    default: "false"
+  cache:
+    description: "If set to 'packages', will cache uv's cache directory. If set to 'venv', will cache the virtual environment."
   cache-dependency-path:
     description: "Specify dependency files hash for cache key. Supports wildcards or a list of file names."
 outputs:
@@ -49,19 +45,28 @@ runs:
       run: |
         echo "checksum=$(md5sum ${{ inputs.cache-dependency-path }}) | md5sum | awk '{ print $1 }')" >> $GITHUB_OUTPUT
 
-    - name: Set up cache
-      id: setup-cache
+    - name: Set up package cache
+      id: setup-package-cache
       uses: actions/cache@v4
-      if: ${{ inputs.cache-packages == 'true' }}
+      if: ${{ inputs.cache == 'packages' }}
       with:
         path: |
-          ${{ inputs.cache-packages == 'true' && steps.setup-uv.outputs.uv-cache-dir }}
-          ${{ inputs.cache-venv == 'true' && steps.setup-uv.outputs.venv-dir }}
+          ${{ steps.setup-uv.outputs.uv-cache-dir }}
         key: setup-python-uv-action-packages-${{ runner.os }}-${{ steps.cache-dependency-checksum.outputs.checksum }}
         save-always: true
 
+    - name: Set up venv cache
+      id: setup-venv-cache
+      uses: actions/cache@v4
+      if: ${{ inputs.cache == 'venv' }}
+      with:
+        path: |
+          ${{ steps.setup-uv.outputs.venv-dir }}
+        key: setup-python-uv-action-venv-${{ runner.os }}-python-${{ inputs.python-version }}-${{ steps.cache-dependency-checksum.outputs.checksum }}
+        save-always: true
+
     - name: Create virtual environment
-      if: ${{ !(inputs.cache-venv == 'true' && steps.setup-cache.outputs.cache-hit == 'true') }}
+      if: ${{ !(inputs.cache == 'venv' && steps.setup-venv-cache.outputs.cache-hit == 'true') }}
       shell: bash
       run: |
         uv venv $HOME/.venv
