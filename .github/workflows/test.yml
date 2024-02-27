@@ -42,3 +42,71 @@ jobs:
           nbautoexport --version
           mkdocs --version
           pytest --version
+
+  tests-no-cache:
+    name: Test, no cache (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: [3.8, 3.9, "3.10", "3.11", "3.12"]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python with uv (local source)
+        uses: ./
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: false
+
+      - name: Check active Python
+        run: |
+          echo "Python: $(which python)"
+          echo "Python version: $(python --version)"
+
+      - name: Install dependencies
+        run: |
+          uv pip install -r test_assets/requirements.txt
+
+      - name: Test some stuff
+        run: |
+          python -c "import cloudpathlib; print('cloudpathlib:', cloudpathlib.__version__)"
+          nbautoexport --version
+          mkdocs --version
+          pytest --version
+
+  tests-pip:
+    name: Test, pip (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: [3.8, 3.9, "3.10", "3.11", "3.12"]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+          cache-dependency-path: |
+            test_assets/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          pip install -r test_assets/requirements.txt
+
+      - name: Test some stuff
+        run: |
+          python -c "import cloudpathlib; print('cloudpathlib:', cloudpathlib.__version__)"
+          nbautoexport --version
+          mkdocs --version
+          pytest --version
+        
