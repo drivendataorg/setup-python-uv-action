@@ -33,14 +33,12 @@ runs:
       if: ${{ runner.os != 'Windows' }}
       shell: bash
       run: |
-        source $HOME/.venv/bin/activate
+        echo "$HOME/.venv/bin" >> $GITHUB_PATH
         echo "VIRTUAL_ENV=$HOME/.venv" >> $GITHUB_ENV
-        echo "PATH=$PATH" >> $GITHUB_ENV
 
     - name: Activate virtual environment (Windows)
       if: ${{ runner.os == 'Windows' }}
       shell: bash
       run: |
-        source $HOME/.venv/Scripts/activate
+        echo "$HOME/.venv/Scripts" >> $GITHUB_PATH
         echo "VIRTUAL_ENV=$HOME/.venv" >> $GITHUB_ENV
-        echo "PATH=$PATH" >> $GITHUB_ENV
