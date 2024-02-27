@@ -1,0 +1,46 @@
+name: 'Set up Python and uv'
+description: 'Sets up Python, installs uv, sets up uv cache, and creates and activates a virtual environment.'
+inputs:
+  python-version:
+    description: "Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset. Passed to setup-python."
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install uv
+      id: install-uv
+      shell: bash
+      run: |
+        pipx install uv
+        echo "uv_cache_dir=$(uv cache dir)" >> $GITHUB_OUTPUT
+
+    - name: Set up uv cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.install-uv.outputs.uv_cache_dir }}
+        key: ${{ runner.os }}-python-uv
+
+    - name: Create virtual environment
+      shell: bash
+      run: |
+        uv venv $HOME/.venv
+
+    - name: Activate virtual environment (Unix)
+      if: ${{ runner.os != 'Windows' }}
+      shell: bash
+      run: |
+        source $HOME/.venv/bin/activate
+        echo "VIRTUAL_ENV=$HOME/.venv" >> $GITHUB_ENV
+        echo "PATH=$PATH" >> $GITHUB_ENV
+
+    - name: Activate virtual environment (Windows)
+      if: ${{ runner.os == 'Windows' }}
+      shell: bash
+      run: |
+        source $HOME/.venv/Scripts/activate
+        echo "VIRTUAL_ENV=$HOME/.venv" >> $GITHUB_ENV
+        echo "PATH=$PATH" >> $GITHUB_ENV
