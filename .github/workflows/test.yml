@@ -24,6 +24,8 @@ jobs:
         uses: ./
         with:
           python-version: ${{ matrix.python-version }}
+          cache-dependency-path: |
+            test_assets/requirements.txt
 
       - name: Check active Python
         run: |
