@@ -1,0 +1,27 @@
+on: 
+  workflow_dispatch:
+
+jobs:
+  tests:
+    name: Test (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: [3.8, 3.9, "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python with uv (local source)
+        uses: ./
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Check active Python
+        run: |
+          echo "Python: $(which python)"
+          echo "Python version: $(python --version)"
+
+      - name: Install dependencies
+        run: |
+          uv pip install test_assets/requirements.txt

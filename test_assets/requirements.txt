@@ -1,0 +1,6 @@
+cloudpathlib
+erdantic
+mypy
+nbautoexport
+ruff
+pytest
