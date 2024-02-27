@@ -68,7 +68,7 @@ runs:
       if: ${{ inputs.cache == 'venv' }}
       with:
         path: |
-          ${{ runner.os == "Windows" && steps.venv-dir-windows.outputs.venv-dir || steps.setup-uv.outputs.venv-dir }}
+          ${{ runner.os == 'Windows' && steps.venv-dir-windows.outputs.venv-dir || steps.setup-uv.outputs.venv-dir }}
         key: setup-python-uv-action-venv-${{ runner.os }}-python-${{ inputs.python-version }}${{ steps.cache-dependency-checksum.outputs.checksum-suffix }}
         save-always: true
 
