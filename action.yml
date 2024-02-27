@@ -45,7 +45,7 @@ runs:
       run: |
         checksum=$(md5sum ${{ inputs.cache-dependency-path }}) | md5sum | awk '{ print $1 }')
         echo "checksum: $checksum"
-        echo "checksum=$checksum" >> $GITHUB_OUTPUT
+        echo "checksum-suffix=-$checksum" >> $GITHUB_OUTPUT
 
     - name: Set up package cache
       id: setup-package-cache
@@ -54,7 +54,7 @@ runs:
       with:
         path: |
           ${{ steps.setup-uv.outputs.uv-cache-dir }}
-        key: setup-python-uv-action-packages-${{ runner.os }}-${{ steps.cache-dependency-checksum.outputs.checksum }}
+        key: setup-python-uv-action-packages-${{ runner.os }}${{ steps.cache-dependency-checksum.outputs.checksum-suffix }}
         save-always: true
 
     - name: Set up venv cache
@@ -64,7 +64,7 @@ runs:
       with:
         path: |
           ${{ steps.setup-uv.outputs.venv-dir }}
-        key: setup-python-uv-action-venv-${{ runner.os }}-python-${{ inputs.python-version }}-${{ steps.cache-dependency-checksum.outputs.checksum }}
+        key: setup-python-uv-action-venv-${{ runner.os }}-python-${{ inputs.python-version }}${{ steps.cache-dependency-checksum.outputs.checksum-suffix }}
         save-always: true
 
     - name: Create virtual environment
