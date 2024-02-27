@@ -26,4 +26,4 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv pip install test_assets/requirements.txt
+          uv pip install -r test_assets/requirements.txt
