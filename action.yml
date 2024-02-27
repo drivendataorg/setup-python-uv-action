@@ -43,7 +43,7 @@ runs:
       if: ${{ (inputs.cache == 'packages' || inputs.cache == 'venv') && inputs.cache-dependency-path }}
       shell: bash
       run: |
-        dependencies="${{ inputs.cache-dependency-path }}" | tr '\n' ' '
+        dependencies='${{ inputs.cache-dependency-path }}' | tr '\n' ' '
         echo "dependencies: $dependencies"
         checksum=$(md5sum $dependencies | md5sum | awk '{ print $1 }')
         echo "checksum: $checksum"
