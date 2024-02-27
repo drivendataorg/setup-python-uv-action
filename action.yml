@@ -43,7 +43,7 @@ runs:
       if: ${{ inputs.cache == 'true' && inputs.cache-dependency-path }}
       shell: bash
       run: |
-        echo "checksum=$(md5sum $(${{ inputs.cache-dependency-path }}) | md5sum | awk '{ print $1 }')" >> $GITHUB_OUTPUT
+        echo "checksum=$(md5sum ${{ inputs.cache-dependency-path }} | md5sum | awk '{ print $1 }')" >> $GITHUB_OUTPUT
 
     - name: Set up uv cache
       id: setup-uv-cache
