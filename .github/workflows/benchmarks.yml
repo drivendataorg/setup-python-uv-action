@@ -45,7 +45,7 @@ jobs:
           pytest --version
 
   tests-cache-venv:
-    name: Test uv, cache packages (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    name: Test uv, cache venv (${{ matrix.os }}, Python ${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -61,7 +61,7 @@ jobs:
         uses: ./
         with:
           python-version: ${{ matrix.python-version }}
-          cache: packages
+          cache: venv
           cache-dependency-path: |
             test_assets/requirements.txt
 
@@ -81,7 +81,6 @@ jobs:
           mkdocs --version
           pytest --version
           
-
   tests-no-cache:
     name: Test uv no cache (${{ matrix.os }}, Python ${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
