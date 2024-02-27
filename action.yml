@@ -3,9 +3,12 @@ description: 'Sets up Python, installs uv, sets up uv cache, and creates and act
 inputs:
   python-version:
     description: "Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset. Passed to setup-python."
-  cache:
-    description: "Whether to cache uv's cache directory. Default is true."
-    default: "true"
+  cache-packages:
+    description: "If set to 'true', will cache uv's cache directory. Default is 'false'."
+    default: "false"
+  cache-venv:
+    description: "If set to 'true', will cache the virtual environment. Default is 'false'."
+    default: "false"
   cache-dependency-path:
     description: "Specify dependency files hash for cache key. Supports wildcards or a list of file names."
 outputs:
@@ -30,31 +33,35 @@ runs:
       with:
         python-version: ${{ inputs.python-version }}
 
-    - name: Install uv
-      id: install-uv
+    - name: Set up uv
+      id: setup-uv
       shell: bash
       run: |
         pipx install uv
         echo "uv-path=$(which uv)" >> $GITHUB_OUTPUT
         echo "uv-cache-dir=$(uv cache dir)" >> $GITHUB_OUTPUT
+        echo "venv-dir=$HOME/.venv" >> $GITHUB_OUTPUT
 
     - name: Generate checksum of cache dependencies
       id: cache-dependency-checksum
-      if: ${{ inputs.cache == 'true' && inputs.cache-dependency-path }}
+      if: ${{ (inputs.cache-packages == 'true' || inputs.cache-venv == 'true') && inputs.cache-dependency-path }}
       shell: bash
       run: |
         echo "checksum=$(md5sum ${{ inputs.cache-dependency-path }}) | md5sum | awk '{ print $1 }')" >> $GITHUB_OUTPUT
 
-    - name: Set up uv cache
-      id: setup-uv-cache
+    - name: Set up cache
+      id: setup-cache
       uses: actions/cache@v4
-      if: ${{ inputs.cache == 'true' }}
+      if: ${{ inputs.cache-packages == 'true' }}
       with:
-        path: ${{ steps.install-uv.outputs.uv-cache-dir }}
-        key: setup-python-uv-action-${{ runner.os }}-${{ steps.cache-dependency-checksum.outputs.checksum }}
+        path: |
+          ${{ inputs.cache-packages == 'true' && steps.setup-uv.outputs.uv-cache-dir }}
+          ${{ inputs.cache-venv == 'true' && steps.setup-uv.outputs.venv-dir }}
+        key: setup-python-uv-action-packages-${{ runner.os }}-${{ steps.cache-dependency-checksum.outputs.checksum }}
         save-always: true
 
     - name: Create virtual environment
+      if: ${{ !(inputs.cache-venv == 'true' && steps.setup-cache.outputs.cache-hit == 'true') }}
       shell: bash
       run: |
         uv venv $HOME/.venv
@@ -63,12 +70,12 @@ runs:
       if: ${{ runner.os != 'Windows' }}
       shell: bash
       run: |
-        echo "$HOME/.venv/bin" >> $GITHUB_PATH
-        echo "VIRTUAL_ENV=$HOME/.venv" >> $GITHUB_ENV
+        echo "${{ steps.setup-uv.outputs.venv-dir }}/bin" >> $GITHUB_PATH
+        echo "VIRTUAL_ENV=${{ steps.setup-uv.outputs.venv-dir }}" >> $GITHUB_ENV
 
     - name: Activate virtual environment (Windows)
       if: ${{ runner.os == 'Windows' }}
       shell: bash
       run: |
-        echo "$HOME/.venv/Scripts" >> $GITHUB_PATH
-        echo "VIRTUAL_ENV=$HOME/.venv" >> $GITHUB_ENV
+        echo "${{ steps.setup-uv.outputs.venv-dir }}/Scripts" >> $GITHUB_PATH
+        echo "VIRTUAL_ENV=${{ steps.setup-uv.outputs.venv-dir }}" >> $GITHUB_ENV

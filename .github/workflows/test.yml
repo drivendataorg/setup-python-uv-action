@@ -8,7 +8,7 @@ on:
 
 jobs:
   tests:
-    name: Test uv with cache (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    name: Test uv, cache both (${{ matrix.os }}, Python ${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -24,6 +24,8 @@ jobs:
         uses: ./
         with:
           python-version: ${{ matrix.python-version }}
+          cache-packages: true
+          cache-venv: true
           cache-dependency-path: |
             test_assets/requirements.txt
 
@@ -60,7 +62,6 @@ jobs:
         uses: ./
         with:
           python-version: ${{ matrix.python-version }}
-          cache: false
 
       - name: Check active Python
         run: |
