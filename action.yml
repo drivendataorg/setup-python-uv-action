@@ -43,11 +43,7 @@ runs:
       if: ${{ (inputs.cache == 'packages' || inputs.cache == 'venv') && inputs.cache-dependency-path }}
       shell: bash
       run: |
-        depchecksums=$(shasum ${{ inputs.cache-dependency-path }})
-        echo "dependency checksums:\n $depchecksums"
-        checksum=$(echo $depchecksums | shasum | awk '{ print $1 }')
-        echo "checksum: $checksum"
-        echo "checksum-suffix=-$checksum" >> $GITHUB_OUTPUT
+        python checksum.py ${{ inputs.cache-dependency-path }} >> $GITHUB_OUTPUT
 
     - name: Set up package cache
       id: setup-package-cache
