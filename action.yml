@@ -94,7 +94,4 @@ runs:
       shell: pwsh
       run: |
         echo "${{ steps.venv-dir-windows.outputs.venv-dir }}\Scripts" >> $env:GITHUB_PATH
-        ${{ steps.venv-dir-windows.outputs.venv-dir }}\Scripts\activate.ps1
-        echo "VIRTUAL_ENV=$env:VIRTUAL_ENV" >> $env:GITHUB_ENV
-        echo "PATH=$env:PATH"
-        echo "VIRTUAL_ENV=$env:VIRTUAL_ENV"
+        echo "VIRTUAL_ENV=${{ steps.venv-dir-windows.outputs.venv-dir }}" >> $env:GITHUB_ENV

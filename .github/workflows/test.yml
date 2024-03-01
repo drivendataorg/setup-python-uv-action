@@ -8,12 +8,17 @@ on:
 
 jobs:
   tests-cache-packages:
-    name: "Test (${{ matrix.os }}, caching: ${{ matrix.cache }})"
+    name: "Test (${{ matrix.os }} ${{ matrix.shell }}, caching: ${{ matrix.cache }})"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         cache: ["none", "packages", "venv"]
+        shell: ["bash"]
+        include:
+          - os: windows-latest
+            shell: pwsh
+
     steps:
       - uses: actions/checkout@v4
 
@@ -25,7 +30,8 @@ jobs:
           cache-dependency-path: >-
             test_assets/requirements.txt
 
-      - name: Check active Python
+      - name: Check active Python (bash)
+        if: ${{ matrix.shell == 'bash' }}
         shell: bash
         run: |
           echo "PATH=$PATH"
@@ -33,8 +39,8 @@ jobs:
           echo "Python: $(which python)"
           echo "Python version: $(python --version)"
 
-      - name: Check active Python (Windows pwsh)
-        if: ${{ runner.os == 'Windows' }}
+      - name: Check active Python (pwsh)
+        if: ${{ matrix.shell == 'pwsh' }}
         shell: pwsh
         run: |
           echo "PATH=$env:Path"
@@ -42,17 +48,36 @@ jobs:
           (Get-Command python).Path
           python --version
 
-      - name: Install dependencies
+      - name: Install dependencies (bash)
+        if: ${{ matrix.shell == 'bash' }}
+        shell: bash
         run: |
           uv pip install -r test_assets/requirements.txt
 
-      - name: Test some stuff
+      - name: Install dependencies (pwsh)
+        if: ${{ matrix.shell == 'pwsh' }}
+        shell: pwsh
+        run: |
+          uv pip install -r test_assets/requirements.txt
+  
+      - name: Test some stuff (bash)
+        if: ${{ matrix.shell == 'bash' }}
+        shell: bash
         run: |
           python -c "import cloudpathlib; print('cloudpathlib:', cloudpathlib.__version__)"
           nbautoexport --version
           mkdocs --version
           pytest --version
 
-      - name: Test Makefile command
+      - name: Test some stuff (pwsh)
+        if: ${{ matrix.shell == 'pwsh' }}
+        shell: pwsh
+        run: |
+          python -c "import cloudpathlib; print('cloudpathlib:', cloudpathlib.__version__)"
+          nbautoexport --version
+          mkdocs --version
+          pytest --version
+  
+      - name: Test some stuff (Makefile)
         run: |
           make test
