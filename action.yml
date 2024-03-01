@@ -43,7 +43,7 @@ runs:
 
     - name: Windows venv dir (Windows)
       id: venv-dir-windows
-      if: ${{ inputs.cache == 'venv' && runner.os == 'Windows'}}
+      if: ${{ runner.os == 'Windows'}}
       shell: bash
       run: |
         # actions/cache needs a Windows-style path for Windows, not Unix-style
@@ -91,7 +91,7 @@ runs:
 
     - name: Activate virtual environment (Windows)
       if: ${{ runner.os == 'Windows' }}
-      shell: bash
+      shell: pwsh
       run: |
-        echo "${{ steps.setup-uv.outputs.venv-dir }}/Scripts" >> $GITHUB_PATH
-        echo "VIRTUAL_ENV=${{ steps.setup-uv.outputs.venv-dir }}" >> $GITHUB_ENV
+        echo "${{ steps.venv-dir-windows.outputs.venv-dir }}\Scripts" >> $env:GITHUB_PATH
+        echo "VIRTUAL_ENV=${{ steps.venv-dir-windows.outputs.venv-dir }}" >> $env:GITHUB_ENV

@@ -8,110 +8,78 @@ on:
 
 jobs:
   tests-cache-packages:
-    name: Test uv, cache packages (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    name: "Test (${{ matrix.os }}, ${{ matrix.shell }}, caching: ${{ matrix.cache }})"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.8, "3.12"]
-    defaults:
-      run:
-        shell: bash
+        cache: ["none", "packages", "venv"]
+        shell: ["bash", "pwsh"]
+        exclude:
+          - os: ubuntu-latest
+            shell: pwsh
+          - os: macos-latest
+            shell: pwsh
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Python with uv (local source)
         uses: ./
         with:
-          python-version: ${{ matrix.python-version }}
-          cache: packages
+          python-version: "3.12"
+          cache: ${{ matrix.cache }}
           cache-dependency-path: >-
             test_assets/requirements.txt
 
-      - name: Check active Python
-        run: |
-          echo "Python: $(which python)"
-          echo "Python version: $(python --version)"
-
-      - name: Install dependencies
-        run: |
-          uv pip install -r test_assets/requirements.txt
-
-      - name: Test some stuff
-        run: |
-          python -c "import cloudpathlib; print('cloudpathlib:', cloudpathlib.__version__)"
-          nbautoexport --version
-          mkdocs --version
-          pytest --version
-
-  tests-cache-venv:
-    name: Test uv, cache venv (${{ matrix.os }}, Python ${{ matrix.python-version }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.8, "3.12"]
-    defaults:
-      run:
+      - name: Check active Python (bash)
+        if: ${{ matrix.shell == 'bash' }}
         shell: bash
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python with uv (local source)
-        uses: ./
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: venv
-          cache-dependency-path: >-
-            test_assets/requirements.txt
-
-      - name: Check active Python
         run: |
+          echo "PATH=$PATH"
+          echo "VIRTUAL_ENV=$VIRTUAL_ENV"
           echo "Python: $(which python)"
           echo "Python version: $(python --version)"
 
-      - name: Install dependencies
+      - name: Check active Python (pwsh)
+        if: ${{ matrix.shell == 'pwsh' }}
+        shell: pwsh
         run: |
-          uv pip install -r test_assets/requirements.txt
+          echo "PATH=$env:Path"
+          echo "VIRTUAL_ENV=$env:VIRTUAL_ENV"
+          (Get-Command python).Path
+          python --version
 
-      - name: Test some stuff
-        run: |
-          python -c "import cloudpathlib; print('cloudpathlib:', cloudpathlib.__version__)"
-          nbautoexport --version
-          mkdocs --version
-          pytest --version
-          
-
-  tests-no-cache:
-    name: Test uv no cache (${{ matrix.os }}, Python ${{ matrix.python-version }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.8, "3.12"]
-    defaults:
-      run:
+      - name: Install dependencies (bash)
+        if: ${{ matrix.shell == 'bash' }}
         shell: bash
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python with uv (local source)
-        uses: ./
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Check active Python
-        run: |
-          echo "Python: $(which python)"
-          echo "Python version: $(python --version)"
-
-      - name: Install dependencies
         run: |
           uv pip install -r test_assets/requirements.txt
 
-      - name: Test some stuff
+      - name: Install dependencies (pwsh)
+        if: ${{ matrix.shell == 'pwsh' }}
+        shell: pwsh
+        run: |
+          uv pip install -r test_assets/requirements.txt
+  
+      - name: Test some stuff (bash)
+        if: ${{ matrix.shell == 'bash' }}
+        shell: bash
         run: |
           python -c "import cloudpathlib; print('cloudpathlib:', cloudpathlib.__version__)"
           nbautoexport --version
           mkdocs --version
           pytest --version
+
+      - name: Test some stuff (pwsh)
+        if: ${{ matrix.shell == 'pwsh' }}
+        shell: pwsh
+        run: |
+          python -c "import cloudpathlib; print('cloudpathlib:', cloudpathlib.__version__)"
+          nbautoexport --version
+          mkdocs --version
+          pytest --version
+  
+      - name: Test some stuff (Makefile)
+        run: |
+          make test
