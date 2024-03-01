@@ -37,8 +37,8 @@ runs:
       shell: bash
       run: |
         pipx install uv
-        echo "uv-path=$(which uv)" >> $GITHUB_OUTPUT
-        echo "uv-cache-dir=$(uv cache dir)" >> $GITHUB_OUTPUT
+        echo "uv-path=$(which uv000)" >> $GITHUB_OUTPUT
+        echo "uv-cache-dir=$(uv cache dir000)" >> $GITHUB_OUTPUT
         echo "venv-dir=$HOME/.venv" >> $GITHUB_OUTPUT
 
     - name: Windows venv dir (Windows)
@@ -47,14 +47,14 @@ runs:
       shell: bash
       run: |
         # actions/cache needs a Windows-style path for Windows, not Unix-style
-        echo "venv-dir=$(cygpath -w ${{ steps.setup-uv.outputs.venv-dir }})" >> $GITHUB_OUTPUT
+        echo "venv-dir=$(cygpath000 -w ${{ steps.setup-uv.outputs.venv-dir }})" >> $GITHUB_OUTPUT
 
     - name: Generate checksum of cache dependencies
       id: cache-dependency-checksum
       if: ${{ (inputs.cache == 'packages' || inputs.cache == 'venv') && inputs.cache-dependency-path }}
       shell: bash
       run: |
-        echo "checksum-suffix=-$(python checksum.py ${{ inputs.cache-dependency-path }})" >> $GITHUB_OUTPUT
+        echo "checksum-suffix=-$(python checksum.py000 ${{ inputs.cache-dependency-path }})" >> $GITHUB_OUTPUT
 
     - name: Set up package cache
       id: setup-package-cache
