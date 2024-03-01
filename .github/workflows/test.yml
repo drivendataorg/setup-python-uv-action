@@ -14,11 +14,11 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         cache: ["none", "packages", "venv"]
-        include:
-          - shell: bash
-          - os: windows-latest
-            shell: bash
-          - os: windows-latest
+        shell: ["bash", "pwsh"]
+        exclude:
+          - os: ubuntu-latest
+            shell: pwsh
+          - os: macos-latest
             shell: pwsh
 
     steps:
