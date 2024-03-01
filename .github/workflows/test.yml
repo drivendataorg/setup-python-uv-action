@@ -8,14 +8,14 @@ on:
 
 jobs:
   tests-cache-packages:
-    name: "Test (${{ matrix.os }} ${{ matrix.shell }}, caching: ${{ matrix.cache }})"
+    name: "Test (${{ matrix.os }}, ${{ matrix.shell }}, caching: ${{ matrix.cache }})"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         cache: ["none", "packages", "venv"]
-        shell: ["bash"]
         include:
+          - shell: bash
           - os: windows-latest
             shell: pwsh
 
