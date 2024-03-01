@@ -32,7 +32,7 @@ jobs:
           python-version: "3.12"
           cache: ${{ matrix.cache }}
           cache-dependency-path: >-
-            test_assets/requirements.txt
+            src/test_assets/requirements.txt
 
       - name: Check active Python (bash)
         if: ${{ matrix.shell == 'bash' }}
@@ -56,7 +56,7 @@ jobs:
         if: ${{ matrix.shell == 'bash' }}
         shell: bash
         run: |
-          uv pip install -r test_assets/requirements.txt
+          uv pip install -r src/test_assets/requirements.txt
 
       - name: Install dependencies (pwsh)
         if: ${{ matrix.shell == 'pwsh' }}
