@@ -48,7 +48,7 @@ runs:
       if: ${{ runner.os == 'Windows'}}
       shell: bash
       run: |
-        venv_dir=$(cygpath0000 -w ${{ steps.setup-uv.outputs.venv-dir }})
+        venv_dir=$(cygpath -w ${{ steps.setup-uv.outputs.venv-dir }})
         echo "venv-dir=$venv_dir" >> $GITHUB_OUTPUT
 
     - name: Generate checksum of cache dependencies
