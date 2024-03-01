@@ -93,6 +93,6 @@ runs:
       if: ${{ runner.os == 'Windows' }}
       shell: pwsh
       run: |
-        echo "${{ steps.setup-uv.outputs.venv-dir }}/Scripts" >> $GITHUB_PATH
-        ${{ steps.setup-uv.outputs.venv-dir }}/Scripts/activate
+        echo "${{ steps.venv-dir-windows.outputs.venv-dir }}\Scripts" >> $GITHUB_PATH
+        ${{ steps.venv-dir-windows.outputs.venv-dir }}\Scripts\activate
         echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
