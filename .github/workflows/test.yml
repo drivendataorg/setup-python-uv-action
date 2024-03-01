@@ -28,6 +28,8 @@ jobs:
       - name: Check active Python
         shell: bash
         run: |
+          echo "PATH=$PATH"
+          echo "VIRTUAL_ENV=$VIRTUAL_ENV"
           echo "Python: $(which python)"
           echo "Python version: $(python --version)"
 
@@ -35,6 +37,8 @@ jobs:
         if: ${{ runner.os == 'Windows' }}
         shell: pwsh
         run: |
+          echo "PATH=$env:Path"
+          echo "VIRTUAL_ENV=$env:VIRTUAL_ENV"
           (Get-Command python).Path
           python --version
 
