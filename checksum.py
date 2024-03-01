@@ -19,7 +19,7 @@ def main():
     )
     overall_checksum = base64.urlsafe_b64encode(
         hashlib.md5(dep_checksums_str.encode()).digest()
-    )
+    ).decode()
     sys.stderr.write(f"Overall checksum: {overall_checksum}\n")
     sys.stdout.write(overall_checksum)
 
