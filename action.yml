@@ -39,7 +39,7 @@ runs:
         pipx install uv
         uv_path=$(which uv)
         echo "uv-path=$uv_path" >> $GITHUB_OUTPUT
-        uv_cache_dir = $(uv cache dir000)
+        uv_cache_dir = $(uv cache dir)
         echo "uv-cache-dir=$uv_cache_dir" >> $GITHUB_OUTPUT
         echo "venv-dir=$HOME/.venv" >> $GITHUB_OUTPUT
 
