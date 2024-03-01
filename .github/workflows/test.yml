@@ -8,12 +8,12 @@ on:
 
 jobs:
   tests-cache-packages:
-    name: Test uv, cache packages (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    name: "Test (${{ matrix.os }}, caching: ${{ matrix.cache }})"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.8, "3.12"]
+        cache: ["none", "packages", "venv"]
     defaults:
       run:
         shell: bash
@@ -23,7 +23,7 @@ jobs:
       - name: Set up Python with uv (local source)
         uses: ./
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.12"
           cache: packages
           cache-dependency-path: >-
             test_assets/requirements.txt
@@ -44,74 +44,6 @@ jobs:
           mkdocs --version
           pytest --version
 
-  tests-cache-venv:
-    name: Test uv, cache venv (${{ matrix.os }}, Python ${{ matrix.python-version }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.8, "3.12"]
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python with uv (local source)
-        uses: ./
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: venv
-          cache-dependency-path: >-
-            test_assets/requirements.txt
-
-      - name: Check active Python
+      - name: Test Makefile command
         run: |
-          echo "Python: $(which python)"
-          echo "Python version: $(python --version)"
-
-      - name: Install dependencies
-        run: |
-          uv pip install -r test_assets/requirements.txt
-
-      - name: Test some stuff
-        run: |
-          python -c "import cloudpathlib; print('cloudpathlib:', cloudpathlib.__version__)"
-          nbautoexport --version
-          mkdocs --version
-          pytest --version
-          
-
-  tests-no-cache:
-    name: Test uv no cache (${{ matrix.os }}, Python ${{ matrix.python-version }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.8, "3.12"]
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python with uv (local source)
-        uses: ./
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Check active Python
-        run: |
-          echo "Python: $(which python)"
-          echo "Python version: $(python --version)"
-
-      - name: Install dependencies
-        run: |
-          uv pip install -r test_assets/requirements.txt
-
-      - name: Test some stuff
-        run: |
-          python -c "import cloudpathlib; print('cloudpathlib:', cloudpathlib.__version__)"
-          nbautoexport --version
-          mkdocs --version
-          pytest --version
+          make test
