@@ -9,7 +9,10 @@ def main():
     dep_checksums = []
     for dep in sorted(sys.argv[1:]):
         # In general, dep is a glob
-        for path in sorted(Path().glob(dep)):
+        paths = sorted(Path().glob(dep))
+        if not paths:
+            raise Exception(f"No files found for dependency path: {dep}")
+        for path in paths:
             dep_checksums.append((path, hashlib.md5(path.read_bytes()).hexdigest()))
     dep_checksums_str = "\n".join(
         [f"{path} {checksum}" for path, checksum in dep_checksums]

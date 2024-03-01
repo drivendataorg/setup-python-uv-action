@@ -37,8 +37,10 @@ runs:
       shell: bash
       run: |
         pipx install uv
-        echo "uv-path=$(which uv)" >> $GITHUB_OUTPUT
-        echo "uv-cache-dir=$(uv cache dir)" >> $GITHUB_OUTPUT
+        uv_path=$(which uv)
+        echo "uv-path=$uv_path" >> $GITHUB_OUTPUT
+        uv_cache_dir=$(uv cache dir)
+        echo "uv-cache-dir=$uv_cache_dir" >> $GITHUB_OUTPUT
         echo "venv-dir=$HOME/.venv" >> $GITHUB_OUTPUT
 
     - name: Windows venv dir (Windows)
@@ -46,15 +48,16 @@ runs:
       if: ${{ runner.os == 'Windows'}}
       shell: bash
       run: |
-        # actions/cache needs a Windows-style path for Windows, not Unix-style
-        echo "venv-dir=$(cygpath -w ${{ steps.setup-uv.outputs.venv-dir }})" >> $GITHUB_OUTPUT
+        venv_dir=$(cygpath -w ${{ steps.setup-uv.outputs.venv-dir }})
+        echo "venv-dir=$venv_dir" >> $GITHUB_OUTPUT
 
     - name: Generate checksum of cache dependencies
       id: cache-dependency-checksum
       if: ${{ (inputs.cache == 'packages' || inputs.cache == 'venv') && inputs.cache-dependency-path }}
       shell: bash
       run: |
-        echo "checksum-suffix=-$(python checksum.py ${{ inputs.cache-dependency-path }})" >> $GITHUB_OUTPUT
+        overall_checksum=$(python $GITHUB_ACTION_PATH/checksum.py ${{ inputs.cache-dependency-path }})
+        echo "checksum-suffix=-$overall_checksum" >> $GITHUB_OUTPUT
 
     - name: Set up package cache
       id: setup-package-cache

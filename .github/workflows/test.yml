@@ -20,17 +20,22 @@ jobs:
             shell: pwsh
           - os: macos-latest
             shell: pwsh
+    defaults:
+      run:
+        working-directory: src/test_assets
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: src
 
       - name: Set up Python with uv (local source)
-        uses: ./
+        uses: ./src
         with:
           python-version: "3.12"
           cache: ${{ matrix.cache }}
           cache-dependency-path: >-
-            test_assets/requirements.txt
+            src/test_assets/requirements.txt
 
       - name: Check active Python (bash)
         if: ${{ matrix.shell == 'bash' }}
@@ -54,13 +59,13 @@ jobs:
         if: ${{ matrix.shell == 'bash' }}
         shell: bash
         run: |
-          uv pip install -r test_assets/requirements.txt
+          uv pip install -r requirements.txt
 
       - name: Install dependencies (pwsh)
         if: ${{ matrix.shell == 'pwsh' }}
         shell: pwsh
         run: |
-          uv pip install -r test_assets/requirements.txt
+          uv pip install -r requirements.txt
   
       - name: Test some stuff (bash)
         if: ${{ matrix.shell == 'bash' }}
