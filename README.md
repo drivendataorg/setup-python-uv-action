@@ -29,10 +29,8 @@ Here's a full example that you can see runs of [here](https://github.com/drivend
 name: example
 
 on: 
-  pull_request:
   push: 
     branches: [main]
-  workflow_dispatch:
 
 jobs:
   example-job:
