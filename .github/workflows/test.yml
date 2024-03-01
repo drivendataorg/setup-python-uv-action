@@ -24,7 +24,7 @@ jobs:
         uses: ./
         with:
           python-version: "3.12"
-          cache: packages
+          cache: ${{ matrix.cache }}
           cache-dependency-path: >-
             test_assets/requirements.txt
 
