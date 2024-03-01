@@ -1,0 +1,26 @@
+name: example
+
+on: 
+  pull_request:
+  push: 
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  example-job:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python with uv
+      uses: drivendataorg/setup-python-uv-action@main
+      with:
+        python-version: 3.12
+
+    - name: Install dependencies
+      run: |
+        uv pip install cowsay
+
+    - name: Run Python code
+      run: |
+        python -c "import cowsay; cowsay.cow('Moo')"

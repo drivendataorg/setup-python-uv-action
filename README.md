@@ -4,9 +4,11 @@ This composite action wraps [actions/setup-python](https://github.com/actions/se
 
 ## Basic Usage
 
+Use this action in place of [actions/setup-python](https://github.com/actions/setup-python):
+
 ```yaml
 - name: Set up Python with uv
-  uses: jayqi/setup-python-uv-action
+  uses: drivendataorg/setup-python-uv-action@main
   with:
     python-version: 3.12
 ```
@@ -17,7 +19,40 @@ Options:
 - **`cache`** (string, optional): If set to 'packages', will cache uv's cache directory. If set to 'venv', will cache the virtual environment. By default, no caching will happen.
 - **`cache-dependency-path`** (string, optional): Specify dependency files to hash for cache key. Supports wildcards or a list of file names separated by spaces.
 
-See [`action.yml`](./action.yml) for additional details and 
+See [`action.yml`](./action.yml) for additional details and outputs.
+
+## Full example
+
+Here's a full example that you can see [running]():
+
+```yaml
+name: example
+
+on: 
+  pull_request:
+  push: 
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  example-job:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python with uv
+      uses: drivendataorg/setup-python-uv-action@main
+      with:
+        python-version: 3.12
+
+    - name: Install dependencies
+      run: |
+        uv pip install cowsay
+
+    - name: Run Python code
+      run: |
+        python -c "import cowsay; cowsay.cow('Moo')"
+```
 
 ## Caching
 
@@ -35,7 +70,7 @@ The `dependency-checksum` is optionally appended to the cache key depending on w
 
 ```yaml
 - name: Set up Python with uv (local source)
-  uses: jayqi/setup-python-uv-action
+  uses: drivendataorg/setup-python-uv-action@main
   with:
     python-version: 3.12
     cache: packages
