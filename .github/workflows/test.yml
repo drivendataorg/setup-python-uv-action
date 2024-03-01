@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          path: src
+          path: ./src
 
       - name: Set up Python with uv (local source)
         uses: src
