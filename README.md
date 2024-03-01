@@ -23,7 +23,7 @@ See [`action.yml`](./action.yml) for additional details and outputs.
 
 ## Full example
 
-Here's a full example that you can see [running]():
+Here's a full example that you can see runs of [here](https://github.com/drivendataorg/setup-python-uv-action/actions/workflows/example.yml).
 
 ```yaml
 name: example
