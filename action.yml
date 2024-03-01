@@ -84,14 +84,13 @@ runs:
 
     - name: Activate virtual environment (Unix)
       if: ${{ runner.os != 'Windows' }}
-      shell: bash
       run: |
         echo "${{ steps.setup-uv.outputs.venv-dir }}/bin" >> $GITHUB_PATH
         echo "VIRTUAL_ENV=${{ steps.setup-uv.outputs.venv-dir }}" >> $GITHUB_ENV
 
     - name: Activate virtual environment (Windows)
       if: ${{ runner.os == 'Windows' }}
-      shell: bash
       run: |
         echo "${{ steps.setup-uv.outputs.venv-dir }}/Scripts" >> $GITHUB_PATH
-        echo "VIRTUAL_ENV=${{ steps.setup-uv.outputs.venv-dir }}" >> $GITHUB_ENV
+        ${{ steps.setup-uv.outputs.venv-dir }}/Scripts/activate
+        echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
