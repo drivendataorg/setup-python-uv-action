@@ -17,6 +17,8 @@ jobs:
         include:
           - shell: bash
           - os: windows-latest
+            shell: bash
+          - os: windows-latest
             shell: pwsh
 
     steps:
