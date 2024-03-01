@@ -43,7 +43,7 @@ runs:
 
     - name: Windows venv dir (Windows)
       id: venv-dir-windows
-      if: ${{ inputs.cache == 'venv' && runner.os == 'Windows'}}
+      if: ${{ runner.os == 'Windows'}}
       shell: bash
       run: |
         # actions/cache needs a Windows-style path for Windows, not Unix-style
