@@ -56,7 +56,7 @@ runs:
       if: ${{ (inputs.cache == 'packages' || inputs.cache == 'venv') && inputs.cache-dependency-path }}
       shell: bash
       run: |
-        overall_checksum=$(python checksum.py ${{ inputs.cache-dependency-path }})
+        overall_checksum=$(python $GITHUB_ACTION_PATH/checksum.py ${{ inputs.cache-dependency-path }})
         echo "checksum-suffix=-$overall_checksum" >> $GITHUB_OUTPUT
 
     - name: Set up package cache
