@@ -24,10 +24,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          path: ./src
+          path: src
 
       - name: Set up Python with uv (local source)
-        uses: src
+        uses: ./src
         with:
           python-version: "3.12"
           cache: ${{ matrix.cache }}
