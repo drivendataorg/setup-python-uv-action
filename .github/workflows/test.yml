@@ -29,9 +29,17 @@ jobs:
             test_assets/requirements.txt
 
       - name: Check active Python
+        shell: bash
         run: |
           echo "Python: $(which python)"
           echo "Python version: $(python --version)"
+
+      - name: Check active Python (Windows pwsh)
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        run: |
+          Get-Command python
+          python --version
 
       - name: Install dependencies
         run: |
