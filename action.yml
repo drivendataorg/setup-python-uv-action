@@ -1,12 +1,12 @@
-name: 'Set up Python and uv'
-description: 'Sets up Python, installs uv, sets up uv cache, and creates and activates a virtual environment.'
+name: "Set up Python and uv"
+description: "Sets up Python, installs uv, sets up uv cache, and creates and activates a virtual environment."
 inputs:
   python-version:
     description: "Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset. Passed to setup-python."
   cache:
-    description: "If set to 'packages', will cache uv's cache directory. If set to 'venv', will cache the virtual environment."
+    description: "If set to 'packages', will cache uv's cache directory. If set to 'venv', will cache the virtual environment. By default, no caching will happen."
   cache-dependency-path:
-    description: "Specify dependency files hash for cache key. Supports wildcards or a list of file names."
+    description: "Specify dependency files to hash for cache key. Supports wildcards or a list of file names separated by spaces."
 outputs:
   python-version:
     description: "The version of Python that was set up."
@@ -20,6 +20,9 @@ outputs:
   uv-path:
     description: "The path to the uv executable."
     value: ${{ steps.install-uv.outputs.uv-path }}
+  virtual-env:
+    description: "The path to the virtual environment created and activated by this action."
+    value: ${{ steps.setup-uv.outputs.venv-dir }}
 runs:
   using: "composite"
   steps:
@@ -37,12 +40,13 @@ runs:
         echo "uv-path=$(which uv)" >> $GITHUB_OUTPUT
         echo "uv-cache-dir=$(uv cache dir)" >> $GITHUB_OUTPUT
         echo "venv-dir=$HOME/.venv" >> $GITHUB_OUTPUT
-    
-    - name: Windows venv dir
+
+    - name: Windows venv dir (Windows)
       id: venv-dir-windows
-      if: ${{ runner.os == 'Windows' }}
+      if: ${{ inputs.cache == 'venv' && runner.os == 'Windows'}}
       shell: bash
       run: |
+        # actions/cache needs a Windows-style path for Windows, not Unix-style
         echo "venv-dir=$(cygpath -w ${{ steps.setup-uv.outputs.venv-dir }})" >> $GITHUB_OUTPUT
 
     - name: Generate checksum of cache dependencies
