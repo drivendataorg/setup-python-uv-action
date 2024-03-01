@@ -22,18 +22,20 @@ jobs:
             shell: pwsh
     defaults:
       run:
-        working-directory: ./test_assets
+        working-directory: src/test_assets
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: src
 
       - name: Set up Python with uv (local source)
-        uses: ./
+        uses: ./src
         with:
           python-version: "3.12"
           cache: ${{ matrix.cache }}
           cache-dependency-path: >-
-            requirements.txt
+            src/test_assets/requirements.txt
 
       - name: Check active Python (bash)
         if: ${{ matrix.shell == 'bash' }}
