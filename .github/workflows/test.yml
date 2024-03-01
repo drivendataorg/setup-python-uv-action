@@ -14,9 +14,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         cache: ["none", "packages", "venv"]
-    defaults:
-      run:
-        shell: bash
     steps:
       - uses: actions/checkout@v4
 
@@ -38,7 +35,7 @@ jobs:
         if: ${{ runner.os == 'Windows' }}
         shell: pwsh
         run: |
-          Get-Command python
+          (Get-Command python).Path
           python --version
 
       - name: Install dependencies
