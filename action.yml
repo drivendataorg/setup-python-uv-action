@@ -48,8 +48,8 @@ runs:
       if: ${{ runner.os == 'Windows'}}
       shell: bash
       run: |
-        # actions/cache needs a Windows-style path for Windows, not Unix-style
-        echo "venv-dir=$(cygpath000 -w ${{ steps.setup-uv.outputs.venv-dir }})" >> $GITHUB_OUTPUT
+        venv_dir=$(cygpath000 -w ${{ steps.setup-uv.outputs.venv-dir }})
+        echo "venv-dir=$venv_dir" >> $GITHUB_OUTPUT
 
     - name: Generate checksum of cache dependencies
       id: cache-dependency-checksum
