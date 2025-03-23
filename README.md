@@ -1,5 +1,8 @@
 # setup-python-uv-action
 
+> [!WARNING]  
+> This action is deprecated and no longer maintained. You should instead use [astral-sh/setup-uv](https://github.com/astral-sh/setup-uv) published directly by [Astral](https://github.com/astral-sh).
+
 This composite action wraps [actions/setup-python](https://github.com/actions/setup-python) and additionally sets up the [uv package installer](https://github.com/astral-sh/uv). It creates and activates a new virtual environment. Caching is optionally available, wrapping [actions/cache](https://github.com/actions/cache).
 
 ## Basic Usage
